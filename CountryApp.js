@@ -18,7 +18,7 @@ const CountryApp = ({ DATA, isLoading, refresh, setRefresh, setLoading, UpdateDa
     const API = "https://restcountries.com/v2/all"
     const Tab = createBottomTabNavigator();
     const [canada, setCanada] = useState({})
-    
+
     const fetchData = () => {
         setLoading(true);
         fetch(API)
@@ -55,9 +55,9 @@ const CountryApp = ({ DATA, isLoading, refresh, setRefresh, setLoading, UpdateDa
 
         <NavigationContainer>
             <Tab.Navigator>
-                <Tab.Screen options={{ headerShown: false, tabBarIcon:(tabInfo) =>{return(<FontAwesome name="home" size={22} color={tabInfo.focused ? "#2980B9" : "#000000"} />)} }} name="Home" component={MainPage} />
-                <Tab.Screen options={{ headerShown: false, tabBarIcon:(tabInfo) =>{return(<Ionicons name="flag" size={22} color={tabInfo.focused ? "#2980B9" : "#000000"} />)} }} name="Country" component={Country} initialParams={{ item: canada }} />
-                <Tab.Screen options={{ headerShown: false, tabBarIcon:(tabInfo) =>{return(<Ionicons name="game-controller" size={24} color={tabInfo.focused ? "#2980B9" : "#000000"} />)} }} name="Game" component={Game} />
+                <Tab.Screen options={{ headerShown: false, tabBarInactiveTintColor:"#000000", tabBarActiveTintColor:"#2980B9", tabBarIcon:(tabInfo) =>{return(<FontAwesome name="home" size={22} color={tabInfo.focused ? "#2980B9" : "#000000"} />)} }} name="Home" component={MainPage} />
+                <Tab.Screen options={{ headerShown: false, tabBarInactiveTintColor:"#000000", tabBarActiveTintColor:"#2980B9", tabBarIcon:(tabInfo) =>{return(<Ionicons name="flag" size={22} color={tabInfo.focused ? "#2980B9" : "#000000"} />)} }} name="Country" component={Country} initialParams={{ item: canada }} />
+                <Tab.Screen options={{ headerShown: false, tabBarInactiveTintColor:"#000000", tabBarActiveTintColor:"#2980B9", tabBarIcon:(tabInfo) =>{return(<Ionicons name="game-controller" size={24} color={tabInfo.focused ? "#2980B9" : "#000000"} />)} }} name="Game" component={Game} />
             </Tab.Navigator>
         </NavigationContainer>
     )
