@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, SafeAreaView, FlatList, Image, TouchableHighlight, TextInput } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, FlatList, Image, TouchableHighlight, TextInput, Button } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { connect } from 'react-redux';
 import { UpdateData } from './redux/actions/index';
@@ -7,23 +7,21 @@ import { useState } from 'react';
 
 const MainPage = ({ DATA, navigation }) => {
     let [text, setText] = useState('')
+    let [localData, setLocal] = useState(DATA)
+    let filterList = (input) => {
+        setText(input)
+        let value = input.toLowerCase()
+        text.length <= 1 ? setLocal(DATA) :
+        setLocal(localData.filter((item)=>{return item.name.toLowerCase().includes(value)||item.region.toLowerCase().includes(value)||item.subregion.toLowerCase().includes(value)}))
+    }
     const CountryTab = ({ item }) => {
         const image_url = { uri: item.flags.png }
+        let toCountry = () => {navigation.navigate("Country",{item:item})}
         if (!(item.hasOwnProperty("name")&&item.hasOwnProperty("latlng")&&item.hasOwnProperty("region")&&item.hasOwnProperty("population")&&item.hasOwnProperty("area"))){
-            return (
-                <TouchableHighlight style={styles.touchable}>
-                    <LinearGradient style={styles.card} colors={['#FFFFFF', '#6DD5FA', '#2980B9']}>
-                        <Text style={styles.countryText}>{item.name.trim().split("(")[0]}</Text>
-                        <View style={styles.image}>
-                            <Image style={styles.flag} source={image_url} />
-                        </View>
-                        <Text style={styles.region}>{item.region}</Text>
-                    </LinearGradient>
-                </TouchableHighlight>
-            )
+            toCountry = () => {}
         }
         return (
-            <TouchableHighlight style={styles.touchable} onPress={() => navigation.navigate("Country",{item:item})}>
+            <TouchableHighlight style={styles.touchable} onPress={toCountry}>
                 <LinearGradient style={styles.card} colors={['#FFFFFF', '#6DD5FA', '#2980B9']}>
                     <Text style={styles.countryText}>{item.name.trim().split("(")[0]}</Text>
                     <View style={styles.image}>
@@ -35,9 +33,11 @@ const MainPage = ({ DATA, navigation }) => {
         )
     }
     return (
-        <SafeAreaView style={{ backgroundColor: "white" }}>
-            <TextInput placeholder='Search'/>
-            <FlatList numColumns={2} data={DATA} renderItem={CountryTab} />
+        <SafeAreaView style={{ backgroundColor: "white", flex:1 }}>
+            <View style={styles.inputView}>
+            <TextInput value={text} onChangeText={(value)=>{filterList(value)}} style={styles.input} placeholder='Search'/>
+            </View>
+            <FlatList numColumns={2} data={localData} renderItem={CountryTab} />
         </SafeAreaView>
     );
 }
@@ -90,6 +90,14 @@ const styles = StyleSheet.create({
         resizeMode: 'stretch',
         borderColor: "black",
         borderWidth: 5,
+    },
+    input: {
+        padding: 20,
+        borderRadius: StyleSheet.hairlineWidth * 30,
+        borderColor: "black",
+        borderWidth: StyleSheet.hairlineWidth * 10,
+        margin: 10,
+        position: "relative"
     }
 })
 
