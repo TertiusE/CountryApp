@@ -1,24 +1,32 @@
-import { StyleSheet, Text, View, SafeAreaView, FlatList, Image, TouchableHighlight, TextInput, Button } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, FlatList, Image, TouchableHighlight, TextInput, TouchableWithoutFeedback, Animated } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { connect } from 'react-redux';
 import { UpdateData } from './redux/actions/index';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { AntDesign } from '@expo/vector-icons';
 
 
 const MainPage = ({ DATA, navigation }) => {
     let [text, setText] = useState('')
     let [localData, setLocal] = useState(DATA)
+    const spinVector = useRef(new Animated.Value(0)).current
+    
+    let spinAnimation = () => {
+        spinVector.setValue(0)
+        Animated.timing(spinVector, { toValue: 1, duration: 1000, useNativeDriver: true }).start()
+    }
+
     let filterList = (input) => {
         setText(input)
         let value = input.toLowerCase()
         text.length <= 1 ? setLocal(DATA) :
-        setLocal(DATA.filter((item)=>{return item.name.toLowerCase().includes(value)||item.region.toLowerCase().includes(value)||item.subregion.toLowerCase().includes(value)}))
+            setLocal(DATA.filter((item) => { return item.name.toLowerCase().includes(value) || item.region.toLowerCase().includes(value) || item.subregion.toLowerCase().includes(value) }))
     }
     const CountryTab = ({ item }) => {
         const image_url = { uri: item.flags.png }
-        let toCountry = () => {navigation.navigate("Country",{item:item})}
-        if (!(item.hasOwnProperty("languages")&&item.hasOwnProperty("nativeName")&&item.hasOwnProperty("callingCodes")&&item.hasOwnProperty("currencies")&&item.hasOwnProperty("name")&&item.hasOwnProperty("latlng")&&item.hasOwnProperty("region")&&item.hasOwnProperty("population")&&item.hasOwnProperty("area"))){
-            toCountry = () => {}
+        let toCountry = () => { navigation.navigate("Country", { item: item }) }
+        if (!(item.hasOwnProperty("languages") && item.hasOwnProperty("nativeName") && item.hasOwnProperty("callingCodes") && item.hasOwnProperty("currencies") && item.hasOwnProperty("name") && item.hasOwnProperty("latlng") && item.hasOwnProperty("region") && item.hasOwnProperty("population") && item.hasOwnProperty("area"))) {
+            toCountry = () => { }
         }
         return (
             <TouchableHighlight style={styles.touchable} onPress={toCountry}>
@@ -33,9 +41,14 @@ const MainPage = ({ DATA, navigation }) => {
         )
     }
     return (
-        <SafeAreaView style={{ backgroundColor: "white", flex:1 }}>
-            <View style={styles.inputView}>
-            <TextInput value={text} onChangeText={(value)=>{filterList(value)}} style={styles.input} placeholder='Search'/>
+        <SafeAreaView style={{ backgroundColor: "white", flex: 1 }}>
+            <View style={[styles.inputView, styles.input]}>
+                <TextInput value={text} onChangeText={(value) => { filterList(value) }} style={styles.textInput} placeholder='Search' />
+                <TouchableWithoutFeedback onPress={() => {spinAnimation();setText(""); setLocal(DATA)}}>
+                    <Animated.View style={{ transform: [{ rotate: spinVector.interpolate({ inputRange: [0, 0.5, 1], outputRange: ['0deg', '360deg', '0deg'] }) }] }}>
+                        <AntDesign suppressHighlighting={true} name="close" size={48} color="black" />
+                    </Animated.View>
+                </TouchableWithoutFeedback>
             </View>
             <FlatList numColumns={2} data={localData} renderItem={CountryTab} />
         </SafeAreaView>
@@ -58,7 +71,7 @@ const styles = StyleSheet.create({
 
     },
     card: {
-        flex:1,
+        flex: 1,
         padding: 10,
 
     },
@@ -92,12 +105,18 @@ const styles = StyleSheet.create({
         borderWidth: 5,
     },
     input: {
-        padding: 20,
         borderRadius: StyleSheet.hairlineWidth * 30,
         borderColor: "black",
         borderWidth: StyleSheet.hairlineWidth * 10,
         margin: 10,
-        position: "relative"
+    },
+    inputView: {
+        flexDirection: "row",
+        alignItems: "center"
+    },
+    textInput: {
+        padding: 20,
+        flex: 1
     }
 })
 

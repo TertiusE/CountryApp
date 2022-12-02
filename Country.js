@@ -1,22 +1,49 @@
-import { StyleSheet, Text, View, SafeAreaView, TouchableHighlight, ScrollView } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import { StyleSheet, Text, View, SafeAreaView, TouchableWithoutFeedback, ScrollView, TouchableHighlight, Modal } from 'react-native';
 import { connect } from 'react-redux';
 import MapView from 'react-native-maps';
 import { UpdateData } from './redux/actions/index';
 import { PROVIDER_GOOGLE } from 'react-native-maps';
 import { useEffect, useState } from 'react';
-import { useIsFocused } from '@react-navigation/native'
+import { useIsFocused } from '@react-navigation/native';
+import { AntDesign } from '@expo/vector-icons';
 
 const Country = ({ DATA, route, navigation }) => {
     const { item } = route.params
-    let [location, setLocation] = useState([37.090240,-95.712891])
+    let [location, setLocation] = useState([37.090240, -95.712891])
+    let [mapModal, setModal] = useState(false)
+
     const isFocused = useIsFocused()
+    const FullView = () => {
+        return (
+            <Modal animationType='slide' transparent={false} visible={mapModal} >
+                <SafeAreaView style={styles.container}>
+                    <View style={styles.modalTitleView}>
+                        <Text style={styles.modalTitle}>Full Map View</Text>
+                    </View>
+                    <View style={[styles.mapModalView, styles.border]}>
+                        <MapView provider={PROVIDER_GOOGLE} style={styles.map} region={{ latitude: location[0], longitude: location[1], latitudeDelta: 5, longitudeDelta: 5, }} />
+                    </View>
+                    <TouchableHighlight underlayColor="red" style={[styles.border, styles.modalButton]} onPress={() => { setModal(!mapModal) }}>
+                        <Text style={styles.modalText}>Close Map</Text>
+                    </TouchableHighlight>
+                </SafeAreaView>
+            </Modal>
+        )
+
+    }
     useEffect(() => {
-        setLocation(item.latlng) 
+        setLocation(item.latlng)
     }, [isFocused])
     return (
         <SafeAreaView style={styles.container}>
-            <Text style={styles.countryText}>{item.name}</Text>
+            <View style={[styles.header]}>
+                <View style={styles.countryView}>
+                    <Text style={styles.countryText}>{item.name}</Text>
+                </View>
+                <TouchableWithoutFeedback style={styles.countryView} onPress={() => { setModal(!mapModal) }}>
+                    <AntDesign suppressHighlighting={true} name="infocirlce" size={24} color="black" />
+                </TouchableWithoutFeedback>
+            </View>
             <View style={[styles.mapView, styles.border]}>
                 <MapView provider={PROVIDER_GOOGLE} style={styles.map} region={{ latitude: location[0], longitude: location[1], latitudeDelta: 5, longitudeDelta: 5, }} />
             </View>
@@ -67,6 +94,7 @@ const Country = ({ DATA, route, navigation }) => {
                     </View>
                 </ScrollView>
             </View>
+            <FullView />
         </SafeAreaView>
     );
 }
@@ -92,8 +120,6 @@ const styles = StyleSheet.create({
     countryText: {
         fontSize: 25,
         fontWeight: "bold",
-        margin: 10,
-        marginBottom: 0
     },
     infoView: {
         flex: 10,
@@ -106,10 +132,9 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-evenly",
         alignItems: "center",
-        alignContent:"center",
+        alignContent: "center",
         flexWrap: "wrap",
-        padding:5
-
+        padding: 5
     },
     boldText: {
         fontWeight: "bold"
@@ -145,24 +170,54 @@ const styles = StyleSheet.create({
     nativeName: {
         fontSize: 20
     },
-    currency:{
-        flex:1,
+    currency: {
+        flex: 1,
     },
-    currencyCode:{
+    currencyCode: {
         fontSize: 30,
-        textAlign:"center"
+        textAlign: "center"
     },
     currencyText: {
         alignItems: "center",
-        justifyContent:"center"
+        justifyContent: "center"
     },
     currencySymbol: {
         alignItems: "center",
-        justifyContent:"center"
+        justifyContent: "center"
     },
     symbolText: {
         fontSize: 40
+    },
+    header: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        margin: 10
+    },
+    mapModalView: {
+        flex: 12,
+        margin: 10
+    },
+    modalButton: {
+        flex: 1,
+        margin: 10,
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    modalText: {
+        fontSize: 25,
+        fontWeight: "bold"
+    },
+    modalTitleView: {
+        flex: 1
+    },
+    modalTitle: {
+        fontSize: 25,
+        fontWeight: "bold",
+        margin: 10
     }
+
+
 })
 
 export default connect(mapState, mapDispatch)(Country);

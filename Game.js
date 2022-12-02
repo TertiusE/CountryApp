@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, SafeAreaView, FlatList, Image, TouchableHighlight, Modal, Animated } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, FlatList, Image, TouchableHighlight, Modal, Animated, TouchableWithoutFeedback } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { connect } from 'react-redux';
 import { UpdateData } from './redux/actions/index';
@@ -18,12 +18,14 @@ const Game = ({ DATA, navigation }) => {
 
     let game_vector = useRef(new Animated.Value(0)).current
     let over_vector = useRef(new Animated.Value(0)).current
+    let pulse = useRef(new Animated.Value(0)).current
 
     const changeScale = () => {
         Animated.sequence([
             Animated.delay(300),
             Animated.timing(game_vector, { toValue: 1, duration: 700, useNativeDriver: false }),
-            Animated.timing(over_vector, { toValue: 1, duration: 700, useNativeDriver: false })
+            Animated.timing(over_vector, { toValue: 1, duration: 700, useNativeDriver: false }),
+            Animated.timing(pulse, { toValue: 1, duration: 3000, useNativeDriver: false }),
         ]).start()
     }
 
@@ -32,6 +34,7 @@ const Game = ({ DATA, navigation }) => {
         setAttempts(0)
         game_vector.setValue(0)
         over_vector.setValue(0)
+        pulse.setValue(0)
     }, [isFocused])
     useEffect(() => {
         setChoices(_.sampleSize(DATA, 8))
@@ -51,24 +54,22 @@ const Game = ({ DATA, navigation }) => {
         setAttempts(attempts + 1)
     }
 
-
-
-
-
     let ShowSuccess = () => {
-
         return (
             <Modal animationType='slide' transparent={false} visible={successModal} >
                 <SafeAreaView style={styles.container}>
                     <View style={styles.modal}>
                         <View style={styles.gameOverView}>
                             <Animated.Text style={[styles.centertext, styles.gameOver, { transform: [{ scale: game_vector }] }]}>GAME</Animated.Text>
-                            <Animated.Text style={[styles.centertext, styles.gameOver, { transform: [{ scale: over_vector }], color: over_vector.interpolate({inputRange:[0,1],outputRange:['black','red']})} ]}>OVER</Animated.Text>
+                            <Animated.Text style={[styles.centertext, styles.gameOver, { transform: [{ scale: over_vector }], color: over_vector.interpolate({ inputRange: [0, 1], outputRange: ['black', 'red'] }) }]}>OVER</Animated.Text>
                         </View>
-                        <View style={styles.scoreView}>
-                            <Text style={[styles.centertext, styles.score]}>SCORE</Text>
-                            <Text style={[styles.centertext, styles.score]}>{score}</Text>
-                        </View>
+
+                        <TouchableWithoutFeedback onLongPress={() => { }}>
+                            <Animated.View style={[styles.scoreView, { transform: [{ scale: pulse.interpolate({ inputRange: [0, 0.25, 0.50, 0.75, 1], outputRange: [1, 1.02, 1, 1.02, 1] }) }] }]}>
+                                <Text style={[styles.centertext, styles.score]}>SCORE</Text>
+                                <Text style={[styles.centertext, styles.score]}>{score}</Text>
+                            </Animated.View>
+                        </TouchableWithoutFeedback>
                     </View>
 
                     <View style={styles.buttonView}>
@@ -76,6 +77,7 @@ const Game = ({ DATA, navigation }) => {
                             setModal(!successModal)
                             game_vector.setValue(0)
                             over_vector.setValue(0)
+                            pulse.setValue(0)
                             navigation.navigate("Home")
                         }}>
                             <Text style={styles.buttonText}>Quit</Text>
@@ -86,7 +88,7 @@ const Game = ({ DATA, navigation }) => {
                             setScore(0)
                             game_vector.setValue(0)
                             over_vector.setValue(0)
-
+                            pulse.setValue(0)
                         }}>
                             <Text style={styles.buttonText}>Play Again</Text>
                         </TouchableHighlight>
@@ -142,6 +144,7 @@ const styles = StyleSheet.create({
     },
     guessImage: {
         margin: 10,
+        marginTop:0,
         flex: 3
     },
     flag: {
@@ -173,7 +176,7 @@ const styles = StyleSheet.create({
 
     },
     cardText: {
-        fontSize: 25,
+        fontSize: 23,
         padding: 10
     },
     row: {
