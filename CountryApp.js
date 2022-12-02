@@ -8,6 +8,7 @@ import { UpdateData } from './redux/actions/index';
 import { setLoading } from './redux/actions/index';
 import { setRefresh } from './redux/actions/index';
 import MainPage from './MainPage';
+import Country from './Country';
 
 const CountryApp = ({ DATA, isLoading, refresh, setRefresh, setLoading, UpdateData }) => {
     const API = "https://restcountries.com/v2/all"
@@ -53,6 +54,7 @@ const CountryApp = ({ DATA, isLoading, refresh, setRefresh, setLoading, UpdateDa
             <Stack.Navigator>
                 <Stack.Group screenOptions={options}>
                     <Stack.Screen name="Home" component={MainPage} />
+                    <Stack.Screen name="Country" component={Country} />
                 </Stack.Group>
             </Stack.Navigator>
         </NavigationContainer>

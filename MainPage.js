@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, SafeAreaView, FlatList, Image } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, FlatList, Image, TouchableHighlight } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { connect } from 'react-redux';
 import { UpdateData } from './redux/actions/index';
@@ -7,19 +7,20 @@ import * as Svg from 'react-native-svg';
 const MainPage = ({ DATA, navigation }) => {
     const CountryTab = ({ item }) => {
         const image_url = { uri: item.flags.png }
-        //numColumns={2}
         return (
-            <LinearGradient style={styles.card} colors={['#FFFFFF', '#6DD5FA','#2980B9']}>
-                <Text style={styles.countryText}>{item.name.trim().split("(")[0]}</Text>
-                <View style={styles.image}>
-                    <Image style={styles.flag} source={image_url} />
-                </View>
-                <Text style={styles.region}>{item.region}</Text>
-            </LinearGradient>
+            <TouchableHighlight onPress={()=>navigation.navigate("Country")}>
+                <LinearGradient style={styles.card} colors={['#FFFFFF', '#6DD5FA', '#2980B9']}>
+                    <Text style={styles.countryText}>{item.name.trim().split("(")[0]}</Text>
+                    <View style={styles.image}>
+                        <Image style={styles.flag} source={image_url} />
+                    </View>
+                    <Text style={styles.region}>{item.region}</Text>
+                </LinearGradient>
+            </TouchableHighlight>
         )
     }
     return (
-        <SafeAreaView style={{backgroundColor:"white"}}>
+        <SafeAreaView style={{ backgroundColor: "white" }}>
             <FlatList numColumns={2} data={DATA} renderItem={CountryTab} />
         </SafeAreaView>
     );
@@ -56,7 +57,7 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         color: "rgb(255,255,255)",
     },
-    image : {
+    image: {
         flex: 1,
         alignSelf: "center",
         margin: 10,
