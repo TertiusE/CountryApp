@@ -1,8 +1,8 @@
-import { StyleSheet, Text, View, SafeAreaView, FlatList, Image, TouchableHighlight, Modal, Button } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, FlatList, Image, TouchableHighlight, Modal, Animated } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { connect } from 'react-redux';
 import { UpdateData } from './redux/actions/index';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native'
 import _ from 'lodash';
 
@@ -16,14 +16,28 @@ const Game = ({ DATA, navigation }) => {
     let [successModal, setModal] = useState(false)
     const isFocused = useIsFocused()
 
+    let game_vector = useRef(new Animated.Value(0)).current
+    let over_vector = useRef(new Animated.Value(0)).current
+
+    const changeScale = () => {
+        Animated.sequence([
+            Animated.delay(300),
+            Animated.timing(game_vector, { toValue: 1, duration: 700, useNativeDriver: false }),
+            Animated.timing(over_vector, { toValue: 1, duration: 700, useNativeDriver: false })
+        ]).start()
+    }
+
     useEffect(() => {
         setScore(0)
         setAttempts(0)
+        game_vector.setValue(0)
+        over_vector.setValue(0)
     }, [isFocused])
     useEffect(() => {
         setChoices(_.sampleSize(DATA, 8))
         if (attempts === 10) {
             setModal(!successModal)
+            changeScale()
         }
     }, [attempts])
     useEffect(() => {
@@ -37,25 +51,46 @@ const Game = ({ DATA, navigation }) => {
         setAttempts(attempts + 1)
     }
 
-    
+
+
+
 
     let ShowSuccess = () => {
+
         return (
             <Modal animationType='slide' transparent={false} visible={successModal} >
                 <SafeAreaView style={styles.container}>
                     <View style={styles.modal}>
-                        <Text>You have registered successfully!</Text>
-                        <Text>{score}</Text>
+                        <View style={styles.gameOverView}>
+                            <Animated.Text style={[styles.centertext, styles.gameOver, { transform: [{ scale: game_vector }] }]}>GAME</Animated.Text>
+                            <Animated.Text style={[styles.centertext, styles.gameOver, { transform: [{ scale: over_vector }], color: over_vector.interpolate({inputRange:[0,1],outputRange:['black','red']})} ]}>OVER</Animated.Text>
+                        </View>
+                        <View style={styles.scoreView}>
+                            <Text style={[styles.centertext, styles.score]}>SCORE</Text>
+                            <Text style={[styles.centertext, styles.score]}>{score}</Text>
+                        </View>
                     </View>
-                    <Button title="Quit" onPress={() => {
-                        setModal(!successModal)
-                        navigation.navigate("Home")
-                    }} />
-                    <Button title="Play Again" onPress={() => {
-                        setModal(!successModal)
-                        setAttempts(0)
-                        setScore(0)
-                    }} />
+
+                    <View style={styles.buttonView}>
+                        <TouchableHighlight underlayColor={"red"} style={styles.customButton} onPress={() => {
+                            setModal(!successModal)
+                            game_vector.setValue(0)
+                            over_vector.setValue(0)
+                            navigation.navigate("Home")
+                        }}>
+                            <Text style={styles.buttonText}>Quit</Text>
+                        </TouchableHighlight>
+                        <TouchableHighlight underlayColor={"green"} style={styles.customButton} onPress={() => {
+                            setModal(!successModal)
+                            setAttempts(0)
+                            setScore(0)
+                            game_vector.setValue(0)
+                            over_vector.setValue(0)
+
+                        }}>
+                            <Text style={styles.buttonText}>Play Again</Text>
+                        </TouchableHighlight>
+                    </View>
                 </SafeAreaView>
             </Modal>
         )
@@ -94,6 +129,11 @@ const mapState = (store) => ({
 });
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+    },
     titleText: {
         fontSize: 23,
         fontWeight: "bold",
@@ -140,8 +180,47 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: "row",
         justifyContent: "space-between"
-    }
+    },
+    buttonView: {
+        flexDirection: "row",
+        justifyContent: "space-between"
+    },
+    customButton: {
+        borderColor: "black",
+        borderWidth: StyleSheet.hairlineWidth * 8,
+        borderRadius: StyleSheet.hairlineWidth * 15,
+        width: "45%",
+        margin: 10
 
+    },
+    buttonText: {
+        fontSize: 25,
+        textAlign: "center",
+        padding: 15,
+    },
+    centertext: {
+        textAlign: "center"
+    },
+    gameOver: {
+        fontSize: 60,
+        fontWeight: "bold",
+        margin: 5
+    },
+    scoreView: {
+        borderColor: "black",
+        borderWidth: StyleSheet.hairlineWidth * 8,
+        borderRadius: StyleSheet.hairlineWidth * 15,
+        width: "50%",
+        alignSelf: "center",
+        margin: 15,
+        padding: 20
+    },
+    score: {
+        fontSize: 40
+    },
+    gameOverView: {
+        flexDirection: "row"
+    }
 })
 
 
