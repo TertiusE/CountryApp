@@ -2,8 +2,8 @@ import { StyleSheet, Text, View, SafeAreaView, FlatList, Image, TouchableHighlig
 import { LinearGradient } from 'expo-linear-gradient';
 import { connect } from 'react-redux';
 import { UpdateData } from './redux/actions/index';
-import * as Svg from 'react-native-svg';
 import { useState } from 'react';
+
 
 const MainPage = ({ DATA, navigation }) => {
     let [text, setText] = useState('')
@@ -12,12 +12,12 @@ const MainPage = ({ DATA, navigation }) => {
         setText(input)
         let value = input.toLowerCase()
         text.length <= 1 ? setLocal(DATA) :
-        setLocal(localData.filter((item)=>{return item.name.toLowerCase().includes(value)||item.region.toLowerCase().includes(value)||item.subregion.toLowerCase().includes(value)}))
+        setLocal(DATA.filter((item)=>{return item.name.toLowerCase().includes(value)||item.region.toLowerCase().includes(value)||item.subregion.toLowerCase().includes(value)}))
     }
     const CountryTab = ({ item }) => {
         const image_url = { uri: item.flags.png }
         let toCountry = () => {navigation.navigate("Country",{item:item})}
-        if (!(item.hasOwnProperty("name")&&item.hasOwnProperty("latlng")&&item.hasOwnProperty("region")&&item.hasOwnProperty("population")&&item.hasOwnProperty("area"))){
+        if (!(item.hasOwnProperty("languages")&&item.hasOwnProperty("nativeName")&&item.hasOwnProperty("callingCodes")&&item.hasOwnProperty("currencies")&&item.hasOwnProperty("name")&&item.hasOwnProperty("latlng")&&item.hasOwnProperty("region")&&item.hasOwnProperty("population")&&item.hasOwnProperty("area"))){
             toCountry = () => {}
         }
         return (

@@ -1,18 +1,22 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, SafeAreaView, TouchableHighlight, ActivityIndicator,Image } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, TouchableHighlight, ActivityIndicator, Image } from 'react-native';
 import { useState, useEffect } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { connect } from 'react-redux';
 import { UpdateData } from './redux/actions/index';
 import { setLoading } from './redux/actions/index';
 import { setRefresh } from './redux/actions/index';
 import MainPage from './MainPage';
 import Country from './Country';
+import Game from './Game';
 
 const CountryApp = ({ DATA, isLoading, refresh, setRefresh, setLoading, UpdateData }) => {
     const API = "https://restcountries.com/v2/all"
-    const Stack = createStackNavigator();
+    const Tab = createBottomTabNavigator();
+    const [canada, setCanada] = useState({})
+
     const options = ({ navigation }) => ({
         headerRight: (props) => <TouchableHighlight onPress={() => { setRefresh(!refresh) }}><Image style={{ marginRight: 10 }} source={require("./assets/refresh.png")} /></TouchableHighlight>
     })
@@ -28,7 +32,7 @@ const CountryApp = ({ DATA, isLoading, refresh, setRefresh, setLoading, UpdateDa
 
             }).then(response => {
                 UpdateData(response);
-                console.log(response);
+                setCanada(response.filter(item => item.name.toLowerCase() == 'canada')[0])
                 setTimeout(() => { setLoading(false) }, 1000)
 
             }).catch((error) => {
@@ -50,13 +54,13 @@ const CountryApp = ({ DATA, isLoading, refresh, setRefresh, setLoading, UpdateDa
     }
 
     return (
+
         <NavigationContainer>
-            <Stack.Navigator>
-                <Stack.Group screenOptions={options}>
-                    <Stack.Screen name="Home" component={MainPage} />
-                    <Stack.Screen name="Country" component={Country} />
-                </Stack.Group>
-            </Stack.Navigator>
+            <Tab.Navigator>
+                <Tab.Screen options={{ headerShown: false }} name="Home" component={MainPage} />
+                <Tab.Screen options={{ headerShown: false }} name="Country" component={Country} initialParams={{item:canada}}/>
+                <Tab.Screen options={{ headerShown: false }} name="Game" component={Game}/>
+            </Tab.Navigator>
         </NavigationContainer>
     )
 }

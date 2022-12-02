@@ -5,12 +5,15 @@ import MapView from 'react-native-maps';
 import { UpdateData } from './redux/actions/index';
 import { PROVIDER_GOOGLE } from 'react-native-maps';
 import { useEffect, useState } from 'react';
+import { useIsFocused } from '@react-navigation/native'
 
 const Country = ({ DATA, route, navigation }) => {
     const { item } = route.params
-    const isUnited = item.name.search("united states")
     let [location, setLocation] = useState([37.090240,-95.712891])
-    useEffect(() => {setLocation(item.latlng) }, [])
+    const isFocused = useIsFocused()
+    useEffect(() => {
+        setLocation(item.latlng) 
+    }, [isFocused])
     return (
         <SafeAreaView style={styles.container}>
             <Text style={styles.countryText}>{item.name}</Text>
