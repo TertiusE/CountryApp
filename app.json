@@ -18,7 +18,11 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.tertiuse.countryapp",
+      "config": {
+        "googleMapsApiKey":"AIzaSyBT3J0xzb-4axUbo08AuPhvfy_R8rHT9y8"
+      }
     },
     "android": {
       "adaptiveIcon": {
