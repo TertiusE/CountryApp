@@ -1,9 +1,11 @@
 import { UPDATE_DATA } from "../actionTypes";
 import { LOADING_STATE } from "../actionTypes";
 import { REFRESH_STATE } from "../actionTypes";
+import { UPDATE_HISTORY } from "../actionTypes";
 
 const initialState = {
-    DATA: {},
+    DATA: [],
+    HISTORY: [],
     isLoading: true,
     refresh: true
 }
@@ -15,6 +17,10 @@ export default function(state = initialState, action) {
         return { ...state, isLoading:action.payload}
     }else if(REFRESH_STATE == action.type){
         return { ...state, refresh:action.payload}
+    }else if (UPDATE_HISTORY == action.type) {
+        var newArray = state.HISTORY
+        newArray.push(action.payload)
+        return { ...state, HISTORY:newArray}
     }
     return state
 }

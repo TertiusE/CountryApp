@@ -1,14 +1,14 @@
 import { StyleSheet, Text, View, SafeAreaView, FlatList, Image, TouchableHighlight, Modal, Animated, TouchableWithoutFeedback } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { connect } from 'react-redux';
-import { UpdateData } from './redux/actions/index';
+import { UpdateData,UpdateHistory } from './redux/actions/index';
 import { useEffect, useRef, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native'
 import _ from 'lodash';
 
 
 
-const Game = ({ DATA, navigation }) => {
+const Game = ({ DATA,HISTORY, UpdateHistory, navigation }) => {
     let [score, setScore] = useState(0)
     let [attempts, setAttempts] = useState(0)
     let [randomChoices, setChoices] = useState(_.sampleSize(DATA, 8))
@@ -41,6 +41,7 @@ const Game = ({ DATA, navigation }) => {
         if (attempts === 10) {
             setModal(!successModal)
             changeScale()
+            UpdateHistory({"score":score,"date": new Date()})
         }
     }, [attempts])
     useEffect(() => {
@@ -100,7 +101,7 @@ const Game = ({ DATA, navigation }) => {
 
     const CountryGuess = ({ item }) => {
         return (
-            <TouchableHighlight underlayColor={item.name === correctAnswer.name ? 'green' : 'red'} style={styles.touchable} onPress={() => { adjustScore(item.name) }}>
+            <TouchableHighlight underlayColor={'#2980B9'} style={styles.touchable} onPress={() => { adjustScore(item.name) }}>
                 <View style={styles.card}>
                     <Text style={styles.cardText}>{item.name.trim().split("(")[0]}</Text>
                 </View>
@@ -125,10 +126,12 @@ const Game = ({ DATA, navigation }) => {
     );
 }
 
-const mapDispatch = { UpdateData };
+const mapDispatch = { UpdateData, UpdateHistory };
 const mapState = (store) => ({
     DATA: store.dataReducer.DATA,
+    HISTORY: store.dataReducer.HISTORY
 });
+
 
 const styles = StyleSheet.create({
     container: {
@@ -137,10 +140,13 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     titleText: {
-        fontSize: 23,
+        fontSize: 25,
         fontWeight: "bold",
         margin: 10,
-        marginBottom: 0
+        marginBottom: 0,
+        shadowColor: "rgba(0,0,0,0.75)",
+        shadowOffset: {width: 5, height: 7},
+        shadowOpacity: 0.4
     },
     guessImage: {
         margin: 10,
@@ -167,6 +173,9 @@ const styles = StyleSheet.create({
         borderColor: "black",
         borderWidth: StyleSheet.hairlineWidth * 6,
         borderRadius: StyleSheet.hairlineWidth * 20,
+        shadowColor: "rgba(0,0,0,0.75)",
+        shadowOffset: {width: 5, height: 7},
+        shadowOpacity: 0.2,
 
     },
     card: {

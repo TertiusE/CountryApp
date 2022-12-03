@@ -50,7 +50,7 @@ const MainPage = ({ DATA, navigation }) => {
                     </Animated.View>
                 </TouchableWithoutFeedback>
             </View>
-            <FlatList numColumns={2} data={localData} renderItem={CountryTab} />
+            <FlatList showsVerticalScrollIndicator={false} numColumns={2} data={localData} renderItem={CountryTab} />
         </SafeAreaView>
     );
 }
@@ -64,10 +64,13 @@ const styles = StyleSheet.create({
     touchable: {
         width: "45%",
         margin: 10,
-        backgroundColor: "rgba(255,255,255,0.75)",
         borderColor: "black",
-        borderWidth: StyleSheet.hairlineWidth * 6,
+        borderWidth: StyleSheet.hairlineWidth * 8,
         borderRadius: StyleSheet.hairlineWidth * 20,
+        shadowColor: "rgba(0,0,0,0.75)",
+        shadowOffset: {width: 5, height: 5},
+        shadowOpacity: 0.6
+
 
     },
     card: {
@@ -112,7 +115,10 @@ const styles = StyleSheet.create({
     },
     inputView: {
         flexDirection: "row",
-        alignItems: "center"
+        alignItems: "center",
+        shadowColor: "rgba(0,0,0,0.75)",
+        shadowOffset: {width: 5, height: 5},
+        shadowOpacity: 0.4
     },
     textInput: {
         padding: 20,

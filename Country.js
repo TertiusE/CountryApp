@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, SafeAreaView, TouchableWithoutFeedback, ScrollView, TouchableHighlight, Modal } from 'react-native';
 import { connect } from 'react-redux';
 import MapView from 'react-native-maps';
-import { UpdateData } from './redux/actions/index';
+import { UpdateData, UpdateHistory } from './redux/actions/index';
 import { PROVIDER_GOOGLE } from 'react-native-maps';
 import { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
@@ -29,7 +29,6 @@ const Country = ({ DATA, route, navigation }) => {
                 </SafeAreaView>
             </Modal>
         )
-
     }
     useEffect(() => {
         setLocation(item.latlng)
@@ -53,7 +52,7 @@ const Country = ({ DATA, route, navigation }) => {
             </View>
 
             <View style={styles.infoView}>
-                <ScrollView>
+                <ScrollView showsVerticalScrollIndicator={false}>
                     <View style={[styles.border, styles.format]}>
                         <Text style={[styles.boldText, styles.textSize]}>Current Population</Text>
                         <Text style={styles.number}>{item.population.toLocaleString()}</Text>
@@ -99,10 +98,7 @@ const Country = ({ DATA, route, navigation }) => {
     );
 }
 
-const mapDispatch = { UpdateData };
-const mapState = (store) => ({
-    DATA: store.dataReducer.DATA,
-});
+
 
 const styles = StyleSheet.create({
     container: {
@@ -116,6 +112,11 @@ const styles = StyleSheet.create({
     mapView: {
         margin: 10,
         flex: 5
+    },
+    countryView:{
+        shadowColor: "rgba(0,0,0,0.75)",
+        shadowOffset: {width: 5, height: 7},
+        shadowOpacity: 0.4
     },
     countryText: {
         fontSize: 25,
@@ -142,7 +143,10 @@ const styles = StyleSheet.create({
     border: {
         borderColor: "black",
         borderWidth: StyleSheet.hairlineWidth * 10,
-        borderRadius: StyleSheet.hairlineWidth * 15
+        borderRadius: StyleSheet.hairlineWidth * 15,
+        shadowColor: "rgba(0,0,0,0.75)",
+        shadowOffset: { width: 5, height: 7 },
+        shadowOpacity: 0.3
     },
     format: {
         flex: 1,
@@ -219,5 +223,11 @@ const styles = StyleSheet.create({
 
 
 })
+
+const mapDispatch = { UpdateData, UpdateHistory };
+const mapState = (store) => ({
+    DATA: store.dataReducer.DATA,
+    HISTORY: store.dataReducer.HISTORY
+});
 
 export default connect(mapState, mapDispatch)(Country);

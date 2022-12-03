@@ -5,14 +5,16 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { connect } from 'react-redux';
-import { UpdateData } from './redux/actions/index';
+import { UpdateData, UpdateHistory } from './redux/actions/index';
 import { setLoading } from './redux/actions/index';
 import { setRefresh } from './redux/actions/index';
 import MainPage from './MainPage';
 import Country from './Country';
 import Game from './Game';
+import History from './History';
 import { Ionicons } from '@expo/vector-icons'; 
 import { FontAwesome } from '@expo/vector-icons'; 
+import { MaterialIcons } from '@expo/vector-icons';
 
 const CountryApp = ({ DATA, isLoading, refresh, setRefresh, setLoading, UpdateData }) => {
     const API = "https://restcountries.com/v2/all"
@@ -58,16 +60,19 @@ const CountryApp = ({ DATA, isLoading, refresh, setRefresh, setLoading, UpdateDa
                 <Tab.Screen options={{ headerShown: false, tabBarInactiveTintColor:"#000000", tabBarActiveTintColor:"#2980B9", tabBarIcon:(tabInfo) =>{return(<FontAwesome name="home" size={22} color={tabInfo.focused ? "#2980B9" : "#000000"} />)} }} name="Home" component={MainPage} />
                 <Tab.Screen options={{ headerShown: false, tabBarInactiveTintColor:"#000000", tabBarActiveTintColor:"#2980B9", tabBarIcon:(tabInfo) =>{return(<Ionicons name="flag" size={22} color={tabInfo.focused ? "#2980B9" : "#000000"} />)} }} name="Country" component={Country} initialParams={{ item: canada }} />
                 <Tab.Screen options={{ headerShown: false, tabBarInactiveTintColor:"#000000", tabBarActiveTintColor:"#2980B9", tabBarIcon:(tabInfo) =>{return(<Ionicons name="game-controller" size={24} color={tabInfo.focused ? "#2980B9" : "#000000"} />)} }} name="Game" component={Game} />
+                <Tab.Screen options={{ headerShown: false, tabBarInactiveTintColor:"#000000", tabBarActiveTintColor:"#2980B9", tabBarIcon:(tabInfo) =>{return(<MaterialIcons name="history" size={24} color={tabInfo.focused ? "#2980B9" : "#000000"} />)} }} name="History" component={History} />
+
             </Tab.Navigator>
         </NavigationContainer>
     )
 }
 
-const mapDispatch = { UpdateData, setLoading, setRefresh };
+const mapDispatch = { UpdateData, setLoading, setRefresh, UpdateHistory };
 const mapState = (store) => ({
     DATA: store.dataReducer.DATA,
     isLoading: store.dataReducer.isLoading,
-    refresh: store.dataReducer.refresh
+    refresh: store.dataReducer.refresh,
+    HISTORY: store.dataReducer.HISTORY
 });
 
 const styles = StyleSheet.create({
